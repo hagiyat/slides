@@ -1,0 +1,360 @@
+<section>
+
+<h1>Redisライブラリ作りました</h1>
+
+<p>2016/03/21 Elixir MeetUp #2 in Drecom</p>
+
+<p><a href="https://github.com/hagiyat" class="user-mention">@hagiyat</a></p>
+
+</section>
+<section>
+
+<h2>自己紹介</h2>
+
+<ul>
+<li>Tomohiro Hagiya</li>
+<li><a href="https://github.com/hagiyat" class="user-mention">@hagiyat</a></li>
+<li>最近マネーフォワードにJoinしました</li>
+<li>最近はほぼRailsな毎日です</li>
+<li>前職は株式会社nanapi</li>
+<li>半年くらい、ほぼ毎日Elixir書いてました</li>
+</ul>
+
+</section>
+<section>
+
+<h2>今日の発表について</h2>
+
+<p>タイトル通りですが、ElixirでRedisを扱うライブラリを作った話をします</p>
+
+</section>
+<section>
+
+<h2>まずお詫び<img class="emoji" alt=":pray:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f64f.png">
+</h2>
+
+<p>前職でやっていた話なので、どういうプロダクトのどういうところで使っていたのか、みたいな話は一切しません</p>
+
+</section>
+<section>
+
+<h2>ElixirのRedis事情</h2>
+
+<p><strong>Awesome Elixirによると</strong></p>
+
+<ul>
+<li>
+<a href="https://github.com/artemeff/exredis">exredis</a> - Redis client for Elixir.</li>
+<li>
+<a href="https://github.com/rodrigues/red">red</a> - Persist relationships between objects in Redis, in a graph-like way.</li>
+<li>
+<a href="https://github.com/heroku/redo">redo</a> - Heroku's pipelining redis client for erlang.</li>
+<li>
+<a href="https://github.com/dantswain/yar">yar</a> - Yet another Redis client for Elixir.</li>
+</ul>
+
+<p>でなければ</p>
+
+<ul>
+<li>
+<a href="https://github.com/wooga/eredis">eredis</a> - Erlang Redis client.</li>
+</ul>
+
+</section>
+<section>
+
+<h2>ElixirのRedis事情</h2>
+
+<p><strong>実際のところ、機能的にはexredis一択</strong></p>
+
+<ul>
+<li>いいところ<img class="emoji" alt=":smile:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f604.png">
+
+<ul>
+<li>充実のAPI定義</li>
+<li>一通りの機能が揃っている(transaction/pubsubなど)</li>
+</ul>
+</li>
+<li>そうでもないところ<img class="emoji" alt=":fearful:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f628.png">
+
+<ul>
+<li>コネクションプーリング機能がないので、毎回clientをstart_linkしてコネクションを作らないといけないので大変</li>
+<li>transaction/pipeline内ではAPIモジュールは使えない(気がする。Listでコマンドと引数を渡したような？)</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section>
+
+<h2>ElixirのRedis事情</h2>
+
+<p>ちょっとプロダクションコードでガシガシ書くにはつらいかも・・・<img class="emoji" alt=":astonished:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f632.png"></p>
+
+</section>
+<section>
+
+<h2>なければ作るしかない</h2>
+
+<ul>
+<li>
+<a href="https://github.com/hagiyat/eredisxs">eredisx</a> - Eredisx is a library for writing in Elixir seems syntax an API of Redis.</li>
+</ul>
+
+<p><code>Redis Weekly</code>というところで紹介していただいたみたいです<img class="emoji" alt=":satisfied:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f606.png"></p>
+
+<p>(Elixir MeetUp #1 の<a href="https://github.com/ohrdev" class="user-mention">@ohrdev</a>の発表を見ていて、今まさにそのへん作ってるよ・・・！と思ってました)</p>
+
+</section>
+<section>
+
+<h2>eredisxの特徴</h2>
+
+<ul>
+<li>Repo概念の導入</li>
+<li>APIモジュール &amp; APIジェネレーター</li>
+<li>transaction/piplineをいい感じで書ける</li>
+<li>redis-object(ruby)風なModel定義</li>
+</ul>
+
+<p>データアクセスライブラリ for Redisのスタンダードっぽくなるように考えました</p>
+
+</section>
+<section>
+
+<h2>eredisxの特徴</h2>
+
+<p><strong>Repo概念の導入</strong></p>
+
+<ul>
+<li>EctoっぽくConnectionを<code>Repo</code>という単位で管理できるようにした</li>
+<li>かつ、各Repoごとにコネクションプーリングできるようにした</li>
+<li>databaseごとに(もちろん別ホストでも)Repoがきれたりして便利かなーと思ってます</li>
+</ul>
+
+</section>
+<section>
+
+<h2>eredisxの特徴</h2>
+
+<p><strong>APIモジュール</strong></p>
+
+<p>ex) Eredisx.Api.Hash.hget</p>
+<pre><code>def hget(key, field, options \\ [])
+
+summary: Get the value of a hash field
+options:
+
+  • repo: If you want to specify a non-default connection of redis, set the
+    name of the connection of redis.
+@since: 2.0.0
+</code></pre>
+<ul>
+<li>clientは？と思われるかもしれませんが、指定しなければデフォルトのRepoを使ってAPIアクセスします</li>
+<li>説明で書いてある通り、optionsにrepoを指定することで別Repoを使用できます</li>
+</ul>
+
+</section>
+<section>
+
+<h2>eredisxの特徴</h2>
+
+<p><strong>APIジェネレーター</strong></p>
+
+<p>ex) Eredisx.Api.Hash.hget</p>
+<pre><code>    generate_apis """
+    HGET key field
+    summary: Get the value of a hash field
+    since: 2.0.0
+    """
+</code></pre>
+<ul>
+<li>要はMacroを使ったコードジェネレータです</li>
+<li>前ページの関数はこの仕組みで生成されたものです</li>
+<li>
+<code>redis-cli help @hash</code>で出力された文字列をペタっと貼るだけ</li>
+</ul>
+
+</section>
+<section>
+
+<h2>eredisxの特徴</h2>
+
+<p><strong>transaction/piplineをいい感じで書ける</strong></p>
+<pre><code>  AnyRepo.pipeline do
+    key = "testvalue"
+    Eredisx.Api.String.set(key, 100)
+    Eredisx.Api.String.incr(key)
+    Eredisx.Api.String.set(key, "hogefuga")
+  end
+</code></pre>
+<ul>
+<li>やっぱりdo-endで書きたい（個人の感想です）のでそうした</li>
+<li>(Redisに詳しくない方のための補足) 通常は1APIごとに1リクエストが発行されますが、pipelineであれば複数APIの実行が1リクエストで処理されます</li>
+</ul>
+
+</section>
+<section>
+
+<h2>eredisxの特徴</h2>
+
+<p><strong>redis-object(ruby)風なModel定義</strong></p>
+<pre><code>defmodule User.Details do
+  use Eredisx.Model.Hash,
+    repo: AnyRepo, # デフォルト以外のRepo指定ができる
+    keyformat: "user:#id#:details",
+    sequence: "user:id",
+    schema: [
+      nickname: "",
+      latest_login_at: Timex.Time.now(:secs),
+      updated_at: Timex.Time.now(:secs),
+    ] # この定義がdefstructで展開される
+end
+
+User.Details.find("user:1:details") # %User{}
+</code></pre>
+</section>
+<section>
+
+<h2>eredisxの特徴</h2>
+
+<p><strong>redis-object(ruby)風なModel定義</strong></p>
+
+<ul>
+<li>model単位でrepoの指定ができます</li>
+<li>シーケンシャルキーの発行を<code>keyformat</code> <code>sequence</code> の定義によりある程度意識しなくてすむ</li>
+<li>Hash型の場合、schema定義によりStructでのデータのやりとりができるようになります</li>
+<li>find/saveといった、あまりRedisAPIを意識せずにすむような関数を用意しました</li>
+</ul>
+
+</section>
+<section>
+
+<p>特徴としてはこんな感じです</p>
+
+<p>もう少しだけ、狭いスコープの細かい話をします</p>
+
+</section>
+<section>
+
+<h2>APIジェネレーター</h2>
+
+<ul>
+<li>repoやtransactionの概念を取り込むことを考えた時、最初はeredisxなどというものは作るつもりがなく、exredisにpull requestして拡張しようと思っていた</li>
+<li>しかし、根本な部分を変えすぎるパッチになってしまったので、やっぱり新しく作ろうと思った</li>
+<li>しかし・・APIは使いたいけど自分で全部実装してかつテストも書かなきゃいけないなんてダルすぎる</li>
+</ul>
+
+</section>
+<section>
+
+<h3>そうだ<img class="emoji" alt=":bulb:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a1.png">
+</h3>
+
+</section>
+<section>
+
+<h3>Macroでコード生成して、APIを網羅すればいいじゃない</h3>
+
+<p><img src="http://livedoor.blogimg.jp/gekisokuu/imgs/c/6/c6869c79.jpg" alt="soreda"></p>
+
+</section>
+<section>
+
+<h2>APIジェネレーター</h2>
+
+<ul>
+<li>ドキュメントからコードを生成できるというところがセールスポイントのひとつです</li>
+<li>Elixirなら、コードジェネレータの結果をコンパイル済みのライブラリとして提供できる</li>
+<li>つまり、昨今のしっかり整備されているAPIであれば、スクレイピングでもしてドキュメントをとってくれば同じことができる</li>
+<li>バージョンアップへの追従など、もしかしたらすごくメンテナンスコストの低い仕組みになるんじゃないか！？</li>
+</ul>
+
+</section>
+<section>
+
+<p>みなさまのご意見ご感想、お待ちしております<img class="emoji" alt=":raising_hand:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f64b.png"></p>
+
+</section>
+<section>
+
+<h2>切り捨てたポイント</h2>
+
+<ul>
+<li>Pub/Sub
+
+<ul>
+<li>pubsubするためだけの専用のライブラリあるし、そっちと組み合わせて使った方がいいと思います</li>
+</ul>
+</li>
+<li>Scripting
+
+<ul>
+<li>これも汎用的なライブラリの機能になるより、専用の機能を実現するためのライブラリとしてリリースされてほしいと個人的には思います</li>
+<li>例えばこんな感じ <a href="http://qiita.com/krt/items/7652c3063a2df6c3fe70">Redisでマルチバイト文字列を高速にあいまい検索する</a> とか</li>
+</ul>
+</li>
+<li>あとはflushdbとかmonitorとか、redis-cliでしか使わないだろうと思ったものは入れないつもり</li>
+</ul>
+
+</section>
+<section>
+
+<p>機能的にはこんな感じです</p>
+
+<p><strong>が・・・</strong></p>
+
+</section>
+<section>
+
+<p><img src="http://d2dcan0armyq93.cloudfront.net/photo/odai/400/f11c76cdff4da82eb32a2c886b62fc55_400.jpg" alt="gomennasai"></p>
+
+<ul>
+<li>実はまだ完成していません</li>
+<li>あたかも完成品みたいな体の発表にしてしまったことをお詫びします</li>
+</ul>
+
+</section>
+<section>
+
+<h2>できてないポイント<img class="emoji" alt=":scream:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f631.png">
+</h2>
+
+<ul>
+<li>テストないです
+
+<ul>
+<li>前述のMacroのテストどうやるんだろう・・っていうところから何も書けないままここまで来てしまいました</li>
+</ul>
+</li>
+<li>Repoの仕組みはまだ未完成
+
+<ul>
+<li>このライブラリの生い立ち的に、とあるプロダクトにベッタリだった実装を引き剥がしたライブラリなので、Repoの仕組みは後付けだったのです</li>
+</ul>
+</li>
+<li>現状の地獄のようなMacroのコードをきれいにする</li>
+<li>Hexに登録</li>
+</ul>
+
+</section>
+<section>
+
+<h2>まとめ</h2>
+
+<ul>
+<li>Eredisxではcontributorを募集しています</li>
+<li>Eredisxではライブラリアイコン・ロゴを募集しています</li>
+<li>Eredisxではsuponsorを募集しています</li>
+<li>Elixirたのしい<img class="emoji" alt=":heart_eyes:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f60d.png">
+</li>
+</ul>
+
+</section>
+<section>
+
+<h1>おわり</h1>
+
+<p>ご清聴ありがとうございました</p>
+
+</section>
