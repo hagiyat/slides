@@ -1,0 +1,740 @@
+<section>
+
+<h1>ORMの歴史</h1>
+
+<p>2016/09/06 in BASE社内勉強会 <a href="https://github.com/hagiyat" class="user-mention">@hagiyat</a></p>
+
+</section>
+<section>
+
+<h1>注意<img class="emoji" alt=":bulb:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a1.png">
+</h1>
+
+<ul>
+<li>当資料は筆者の観測範囲(PHPレガシー/Ruby on Rails/最近使ってるsqlalchemy)のみから抽出された情報のまとめです</li>
+<li>よってこの資料から得られた知識でドヤリングするのは<img class="emoji" alt=":no_good:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f645.png">
+</li>
+<li>筆者はRails信者というわけではありません <img class="emoji" alt=":innocent:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f607.png">
+</li>
+</ul>
+
+</section>
+<section>
+
+<h1>ORMとは(念のため)</h1>
+
+<blockquote>
+<p>オブジェクト関係マッピング オブジェクト関係マッピング（英: Object-relational mapping、O/RM、ORM）とは、データベースとオブジェクト指向プログラミング言語の間の非互換なデータを変換するプログラミング技法である。 オブジェクト関連マッピングとも呼ぶ。</p>
+</blockquote>
+
+<p>オブジェクト関係マッピング - Wikipedia
+<a href="https://ja.wikipedia.org/wiki/オブジェクト関係マッピング">https://ja.wikipedia.org/wiki/オブジェクト関係マッピング</a></p>
+
+</section>
+<section>
+
+<h1>ORMの進化</h1>
+
+<p>ざっくりフェーズわけするとこんな感じ？</p>
+
+<ol>
+<li>bind+driver+alpha時代</li>
+<li>MVCのMにべったりくっついている時代</li>
+<li>純粋なアドオン時代</li>
+</ol>
+
+</section>
+<section>
+
+<h1>ORMの進化 - 1</h1>
+
+<p>bind+driver+alpha時代</p>
+
+<ul>
+<li>特にObjectのRelationalをMappingしたりはしていないので、ORMではないとも言う</li>
+<li>各データストアドライバーの抽象化レイヤーという意味合い</li>
+<li>例 <code>PHP PDO</code>
+</li>
+<li>SQLインジェクションに対抗する手段としてのbind関数が提供されるだけでも充分な意味があった</li>
+</ul>
+
+</section>
+<section>
+
+<h1>ORMの進化 - 2</h1>
+
+<p>MVCのMにべったりくっついている時代</p>
+
+<ul>
+<li>Webフレームワークと完全に一体になっているタイプ</li>
+<li>くっついているので外で単体で使うとかは無理<img class="emoji" alt=":cry:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f622.png">
+</li>
+<li>スキーママイグレーションの概念を持つことが当たり前になる</li>
+<li>railsはわりといまだに一体型
+
+<ul>
+<li>まあ悪いことばっかりというわけでもないけども</li>
+<li>例えば、ARが入っている前提でRailsの拡張ライブラリを作れたりするなど</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section>
+
+<h1>ORMの進化 - 3</h1>
+
+<p>純粋なアドオン時代</p>
+
+<ul>
+<li>WAFのインストールにくっついて入ってくるけど、実はインストールオプションで変えられたりとか</li>
+<li>sqlalchemyとか</li>
+<li>WAF / ORM / migration / template engineとバラせて組み合わせられると、関心の対象を小さくできる
+
+<ul>
+<li>例えばバージョンアップのとき、検証の範囲を小さくできたりとか</li>
+<li>バージョンアップコストが低いの超重要</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section>
+
+<h2>ORMの進化(まとめ)</h2>
+
+<p>よく聞く名前のあいつはどこに属してる？ 🤔</p>
+
+<table>
+<thead>
+<tr>
+<th>WAF</th>
+<th>所属</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cakephp2</td>
+<td>超一体型</td>
+</tr>
+<tr>
+<td>rails</td>
+<td>超一体型</td>
+</tr>
+<tr>
+<td>django</td>
+<td>超一体型</td>
+</tr>
+<tr>
+<td>sqlalchemy</td>
+<td>純粋アドオン</td>
+</tr>
+<tr>
+<td>ecto(elixir)</td>
+<td>WAFとくっついてくるけど、外せるタイプの純粋アドオンであり、スタンドアロンでもある</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section>
+
+<h2>WAF/ORMの進化(年表-1)</h2>
+
+<table>
+<thead>
+<tr>
+<th>年</th>
+<th>WAFリリース</th>
+<th>その他</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2005</td>
+<td>Rails1.0</td>
+<td>PHP5.1 / PDO / Apache2.2</td>
+<td></td>
+</tr>
+<tr>
+<td>2006</td>
+<td>CakePHP1.0 / Symfony1.0</td>
+<td>PHP5.2</td>
+<td></td>
+</tr>
+<tr>
+<td>2007</td>
+<td>Rails2.0</td>
+<td>初代iPhone発売</td>
+<td></td>
+</tr>
+<tr>
+<td>2008</td>
+<td></td>
+<td>iPhone3G発売</td>
+<td>日本国内初iPhone <img class="emoji" alt=":tada:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f389.png">
+</td>
+</tr>
+<tr>
+<td>2009</td>
+<td></td>
+<td>PHP5.3</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section>
+
+<h2>WAF/ORMの進化(年表-2)</h2>
+
+<table>
+<thead>
+<tr>
+<th>年</th>
+<th>WAFリリース</th>
+<th>その他</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2010</td>
+<td>Rails3.0</td>
+<td></td>
+<td>nginxが話題になりだした？</td>
+</tr>
+<tr>
+<td>2011</td>
+<td>CakePHP2.0 / Symfony2.0 / Pyramid1.0</td>
+<td></td>
+<td>Cake2ってこんな新しいの <img class="emoji" alt=":fearful:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f628.png">
+</td>
+</tr>
+<tr>
+<td>2012</td>
+<td></td>
+<td>PHP5.4</td>
+<td></td>
+</tr>
+<tr>
+<td>2013</td>
+<td>Rails4.0</td>
+<td>PHP5.5</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section>
+
+<h2>WAF/ORMの進化(年表-3)</h2>
+
+<table>
+<thead>
+<tr>
+<th>年</th>
+<th>WAFリリース</th>
+<th>その他</th>
+<th>備考</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2014</td>
+<td></td>
+<td>PHP5.6 / Docker1.0</td>
+<td></td>
+</tr>
+<tr>
+<td>2015</td>
+<td>CakePHP3.0</td>
+<td>PHP7.0 / SQLAlchemy1.0.0</td>
+<td></td>
+</tr>
+<tr>
+<td>2016</td>
+<td>Rails5.0</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+
+<p>個人的にはRails3よりCake2の方が新しいっていうのが衝撃的 🤔</p>
+
+</section>
+<section>
+
+<h1>休憩 <img class="emoji" alt=":sleepy:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f62a.png">
+</h1>
+
+</section>
+<section>
+
+<h1>ディスカッションタイム</h1>
+
+<p>ORMのいいところ・ダメなところってなんだろう？</p>
+
+</section>
+<section>
+
+<p>なるほど😇</p>
+
+<p><img src="http://p.twpl.jp/show/large/sOETJ" alt="はい"></p>
+
+</section>
+<section>
+
+<h1>ではわたくしの意見を <img class="emoji" alt=":bow:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f647.png">
+</h1>
+
+</section>
+<section>
+
+<h2>ORMのダメなところ</h2>
+
+<ul>
+<li>それなりの学習コストがかかる</li>
+<li>頻出課題(ツリー構造とか)は知識勝負
+
+<ul>
+<li>↑課題を解決するためのアドオンはどんなのがあるんだっけ？など</li>
+</ul>
+</li>
+<li>知らないお作法を知らないまま使ってると事故る
+
+<ul>
+<li>N+1問題など</li>
+</ul>
+</li>
+<li>そもそもそれなりにSQLを知っていないと使いこなすの無理（どう組み立てられるのか？)</li>
+<li>↑ということの認知が充分な気がしない</li>
+</ul>
+
+</section>
+<section>
+
+<h2>ORMのいいところ</h2>
+
+<ul>
+<li>素のSQLを書くより構造的に記述することができる</li>
+<li>コード内にSQLを書くことによる問題を、お作法に則ることで自然に回避できる
+
+<ul>
+<li>SQL injection</li>
+<li>N+1問題</li>
+</ul>
+</li>
+<li>当該モデルにおける頻出条件をパーツ化でき、それらを容易に組み合わせて使うことができる</li>
+</ul>
+
+</section>
+<section>
+
+<h2>ただし、これは正確には「そこそこモダンなORMの良いところ」</h2>
+
+</section>
+<section>
+
+<h2>では、そのモダンORMの代表格であるところの、RailsのActiveRecordについて少々説明します</h2>
+
+</section>
+<section>
+
+<h2>その前にRailsの功績</h2>
+
+<p>まず、なぜRailsが支持されているのか</p>
+
+<ul>
+<li>豊富なGem</li>
+<li>豊富な情報源</li>
+<li>2016年現在、最強ORMであるところのActiveRecordを含んでいること</li>
+<li>↑(個人の感想です)</li>
+</ul>
+
+</section>
+<section>
+
+<h2>ActiveRecordを最強たらしめていること</h2>
+
+<h2>
+<img class="emoji" alt=":muscle:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4aa.png"> ActiveRecord::Relation <img class="emoji" alt=":muscle:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4aa.png">
+</h2>
+
+</section>
+<section>
+
+<h2>ActiveRecord::Relationって？</h2>
+<pre><code>class User &lt; ActiveRecord::Base
+  has_one :profile
+  has_many :devices
+
+  ADULT_AGE = 18
+  scope :available, -&gt; { where(activated: true) }
+  scope :adult, -&gt; { where('age &gt;= ?', ADULT_AGE)}
+end
+</code></pre>
+</section>
+<section>
+
+<h2>ActiveRecord::Relationって？</h2>
+<pre><code>rails console &gt; r = User.available
+</code></pre>
+<p>この<code>r</code>という変数に入っているのが、ActiveRecord::Relation</p>
+
+</section>
+<section>
+
+<h2>ActiveRecord::Relationって？</h2>
+<pre><code>rails console &gt; r.adult
+</code></pre>
+<ul>
+<li>要は条件定義中の状態を表すObject</li>
+<li>ActiveRecord::Relationの状態であれば、別のscope(条件定義みたいなものです)を連結して、条件を追加できる</li>
+</ul>
+
+</section>
+<section>
+
+<h2>ActiveRecord::Relationって？</h2>
+<pre><code>rails console &gt; users = r.adult.first(4)
+</code></pre>
+<p>first/last/all/find/eachなどの抽出メソッドを実行することで、はじめてActiveRecord::Base::UserのArrayを取り出すことができる</p>
+
+</section>
+<section>
+
+<h2>要するに</h2>
+
+<ul>
+<li>ActiveRecord::Relation状態のままであれば、いくらでも評価を遅延させることができる <img class="emoji" alt=":muscle:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4aa.png">
+</li>
+<li>(SQLクエリは発行しないという意味です)</li>
+</ul>
+
+</section>
+<section>
+
+<h2>実際にRailsのコントローラーを定義してみよう</h2>
+
+<p>Modelおさらい</p>
+<pre><code>class User &lt; ActiveRecord::Base
+  has_one :profile
+  has_many :devices
+
+  ADULT_AGE = 18
+  scope :available, -&gt; { where(activated: true) }
+  scope :adult, -&gt; { where('age &gt;= ?', ADULT_AGE) }
+end
+</code></pre>
+</section>
+<section>
+
+<h2>実際にRailsのコントローラーを定義してみよう</h2>
+
+<p>Contorller</p>
+<pre><code>class UserController &lt; ApplicationController
+  PER_PAGE = 10
+
+  def index
+    r = User.available
+    r = r.adult if params[:is_adult]
+    @users = r.first(PER_PAGE)
+  end
+end
+</code></pre>
+</section>
+<section>
+
+<h1>すっきり <img class="emoji" alt=":smile:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f604.png">
+</h1>
+
+</section>
+<section>
+
+<h1>fat controller問題</h1>
+
+<p>ORMの条件式の構築もビジネスロジックもなんでもかんでもControllerに書いちゃう、という問題</p>
+
+</section>
+<section>
+
+<h1>ディスカッションタイム</h1>
+
+<ul>
+<li>おれたちのシステムはfat controller問題を抱えているのか？</li>
+<li>もしそうなら、それを解決するにはどうしたら？</li>
+</ul>
+
+</section>
+<section>
+
+<p><img src="http://serif.hatelabo.jp/images/cache/2b0a04a1636b501e0ad202e672039491b05690d9/608c8ae8d68c334cef13aba275f75c2d96cb5962.gif" alt=""></p>
+
+</section>
+<section>
+
+<h1>答え</h1>
+
+<ul>
+<li>たぶんfat controller問題はある</li>
+<li>なぜかと言うと、遅延評価できないCakePHPでは抽出過程と抽出結果の取り出しを分離できないから</li>
+<li>つまり、条件式をcontrollerに書く(fat controller)か、抽出メソッドの定義(fat model)のどちらかになってしまいがち</li>
+</ul>
+
+</section>
+<section>
+
+<h1>fat model・・だと？ <img class="emoji" alt=":fearful:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f628.png">
+</h1>
+
+</section>
+<section>
+
+<h2>そうですfat modelです</h2>
+
+<ul>
+<li>実際のところそれぞれのレイヤーで適切に役割分担しなければ、どこかのレイヤーは太ってしまいがち <img class="emoji" alt=":pig:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f437.png">
+</li>
+<li>その例として、model内でのデータ抽出メソッドの大量生産がある？</li>
+</ul>
+
+</section>
+<section>
+
+<h2>modelに実際に問い合わせした結果を返すメソッドを量産するのは筋が悪いのか？</h2>
+
+</section>
+<section>
+
+<h2>答え</h2>
+
+<ul>
+<li>悪い <img class="emoji" alt=":sob:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f62d.png">
+</li>
+<li>条件などの組み合わせ次第で無数のバリエーションがあるから</li>
+<li>バリエーションのほとんどが使われないゴミメソッドになる(可能性が高い)</li>
+<li>→メンテ不能＼(^o^)／</li>
+</ul>
+
+</section>
+<section>
+
+<h2>ActiveRecordはこういった問題に対抗する手段が色々存在している</h2>
+
+</section>
+<section>
+
+<h2>Rails純正</h2>
+
+<ul>
+<li>scopeで条件式の分離</li>
+<li>validatorで複雑な条件を別クラスに外出しに</li>
+<li>before_actionなどのcallback</li>
+<li>concernで横断的関心事の定義
+
+<ul>
+<li>たとえば認証情報からユーザーのプロフィールを取ってくるとか、ドメインというよりはシステム内の色々なところで使うもの</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section>
+
+<h2>Gemで</h2>
+
+<ul>
+<li>draperで、viewとmodelの中間層を定義
+
+<ul>
+<li>↑結果、viewもmodelも小さくできる</li>
+</ul>
+</li>
+<li>ranspackで複雑な条件式を簡易化</li>
+<li>enumerizeでフラグ関連の管理とチェックメソッドの追加</li>
+<li>kaminariでページネーション処理の簡易化</li>
+</ul>
+
+</section>
+<section>
+
+<h2>他にも色々</h2>
+
+<p>念のためもう一度</p>
+
+<p>筆者はRails信者というわけではありません <img class="emoji" alt=":innocent:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f607.png"></p>
+
+</section>
+<section>
+
+<p>次の話題</p>
+
+</section>
+<section>
+
+<h1>N+1問題って？</h1>
+
+<blockquote>
+<p>SQLクエリが 「データ量N + 1回 」走ってしまい、取得するデータが多くなるにつれて（Nの回数が増えるにつれて）パフォーマンスを低下させてしまう問題</p>
+</blockquote>
+
+</section>
+<section>
+
+<h2>つまりはこういう</h2>
+
+<p>おなじみのModel</p>
+<pre><code>class User &lt; ActiveRecord::Base
+  has_one :profile
+  has_many :devices
+
+  ADULT_AGE = 18
+  scope :available, -&gt; { where(activated: true) }
+  scope :adult, -&gt; { where('age &gt;= ?', ADULT_AGE) }
+end
+
+rails console &gt; users = User.first(4)
+</code></pre>
+</section>
+<section>
+
+<h2>つまりはこういう</h2>
+<pre><code>rails console &gt; users = User.first(4)
+# SELECT * FROM users LIMIT 0, 4
+rails console &gt; profiles = users.map { |user| user.profile }
+# SELECT * FROM profile WHERE id = 1 LIMIT 1
+# SELECT * FROM profile WHERE id = 2 LIMIT 1
+# SELECT * FROM profile WHERE id = 3 LIMIT 1
+# SELECT * FROM profile WHERE id = 4 LIMIT 1
+</code></pre>
+<p>4件のprofileも含めて5回(4 + 1)回のクエリー発行 <img class="emoji" alt=":innocent:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f607.png"></p>
+
+</section>
+<section>
+
+<h1>　どうするか</h1>
+
+</section>
+<section>
+
+<h2>事前にprofileも要るよーと言っておけばいい</h2>
+<pre><code>rails console &gt; users = User.preload(:profile).first(4)
+# SELECT * FROM users LIMIT 0, 4
+# SELECT * FROM profile WHERE id in [1, 2, 3, 4]
+rails console &gt; profiles = users.map { |user| user.profile }
+# (cached) SELECT * FROM profile WHERE id = 1 LIMIT 1
+# (cached) SELECT * FROM profile WHERE id = 2 LIMIT 1
+# (cached) SELECT * FROM profile WHERE id = 3 LIMIT 1
+# (cached) SELECT * FROM profile WHERE id = 4 LIMIT 1
+</code></pre>
+<p>2回で済んだ <img class="emoji" alt=":thumbsup:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f44d.png"></p>
+
+</section>
+<section>
+
+<h2>Cakeでは</h2>
+
+<ul>
+<li>Association定義しておいたリレーション先が一括で取得される方式</li>
+<li>なので、N+1は発生しないが余計なデータを常に取得することを気にする必要がある</li>
+<li>ActiveRecordと発想が逆</li>
+</ul>
+
+</section>
+<section>
+
+<h2>どっちにしても検出できさえすれば</h2>
+
+<p>Railsはbulletという神Gemでさらっと検出できる</p>
+
+</section>
+<section>
+
+<p>最後の話題</p>
+
+</section>
+<section>
+
+<h1>Migration</h1>
+
+<ul>
+<li>スキーマの変更を管理する仕組み</li>
+<li>ツールによっては適用だけではなく、バージョニングの仕組みを備えているものもある
+
+<ul>
+<li>というか最近はあるのが当たり前</li>
+<li>rollback</li>
+<li>(ORMで書いたものから)発行されるSQLを表示</li>
+<li>dry-run</li>
+</ul>
+</li>
+<li>既存スキーマからマイグレーションデータ生成といった高機能なものも
+
+<ul>
+<li>(MySQL限定)rolling schema update</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section>
+
+<h1>色々なMigrationツール</h1>
+
+<ul>
+<li>一体型のWAFにはだいたい付いてる
+
+<ul>
+<li>Django</li>
+<li>Rails</li>
+</ul>
+</li>
+<li>Alembic
+
+<ul>
+<li>だいたい揃ってる感じ</li>
+</ul>
+</li>
+<li>gh-ost
+
+<ul>
+<li>rolling schema updateを実現するすごいやつ(らしい)</li>
+</ul>
+</li>
+</ul>
+
+</section>
+<section>
+
+<h1>まとめ</h1>
+
+<ul>
+<li>
+<img class="emoji" alt=":smile:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f604.png"> ORMの歴史はそこそこ長く、進化もしている</li>
+<li>
+<img class="emoji" alt=":bulb:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a1.png"> ORMの目的は生産性を上げること</li>
+<li>🤔 最強ORMはActiveRecord。ただし最良とは言ってない</li>
+<li>
+<img class="emoji" alt=":fire:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f525.png"> 周辺ツールの充実はかなり重要。ORMに限らないが・・</li>
+<li>
+<img class="emoji" alt=":muscle:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4aa.png"> 知識のアップデートはこまめに！！</li>
+</ul>
+
+</section>
+<section>
+
+<h1>おしまい</h1>
+
+<p>ありがとうございました 🤘</p>
+
+</section>
+<section>
+
+<h1>質疑応答など</h1>
+
+</section>
