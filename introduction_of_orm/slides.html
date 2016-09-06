@@ -1,14 +1,14 @@
 <section>
 
-<h1>ORMの歴史</h1>
+<h1>ORMとなかよくする</h1>
 
 <p>2016/09/06 in BASE社内勉強会 <a href="https://github.com/hagiyat" class="user-mention">@hagiyat</a></p>
 
 </section>
 <section>
 
-<h1>注意<img class="emoji" alt=":bulb:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a1.png">
-</h1>
+<h2>注意<img class="emoji" alt=":bulb:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a1.png">
+</h2>
 
 <ul>
 <li>当資料は筆者の観測範囲(PHPレガシー/Ruby on Rails/最近使ってるsqlalchemy)のみから抽出された情報のまとめです</li>
@@ -21,7 +21,19 @@
 </section>
 <section>
 
-<h1>ORMとは(念のため)</h1>
+<h2>注意<img class="emoji" alt=":bulb:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a1.png">
+</h2>
+
+<ul>
+<li>当発表は完全な聴講形式ではありません</li>
+<li>中後半にディスカッションタイムがあるよ <img class="emoji" alt=":raising_hand:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f64b.png">
+</li>
+</ul>
+
+</section>
+<section>
+
+<h2>ORMとは(念のため)</h2>
 
 <blockquote>
 <p>オブジェクト関係マッピング オブジェクト関係マッピング（英: Object-relational mapping、O/RM、ORM）とは、データベースとオブジェクト指向プログラミング言語の間の非互換なデータを変換するプログラミング技法である。 オブジェクト関連マッピングとも呼ぶ。</p>
@@ -33,7 +45,7 @@
 </section>
 <section>
 
-<h1>ORMの進化</h1>
+<h2>ORMの進化</h2>
 
 <p>ざっくりフェーズわけするとこんな感じ？</p>
 
@@ -46,14 +58,14 @@
 </section>
 <section>
 
-<h1>ORMの進化 - 1</h1>
+<h2>ORMの進化 - 1</h2>
 
 <p>bind+driver+alpha時代</p>
 
 <ul>
 <li>特にObjectのRelationalをMappingしたりはしていないので、ORMではないとも言う</li>
 <li>各データストアドライバーの抽象化レイヤーという意味合い</li>
-<li>例 <code>PHP PDO</code>
+<li>例) <code>PHP PDO</code>
 </li>
 <li>SQLインジェクションに対抗する手段としてのbind関数が提供されるだけでも充分な意味があった</li>
 </ul>
@@ -61,7 +73,7 @@
 </section>
 <section>
 
-<h1>ORMの進化 - 2</h1>
+<h2>ORMの進化 - 2</h2>
 
 <p>MVCのMにべったりくっついている時代</p>
 
@@ -69,8 +81,8 @@
 <li>Webフレームワークと完全に一体になっているタイプ</li>
 <li>くっついているので外で単体で使うとかは無理<img class="emoji" alt=":cry:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f622.png">
 </li>
-<li>スキーママイグレーションの概念を持つことが当たり前になる</li>
-<li>railsはわりといまだに一体型
+<li>スキーママイグレーションの概念/機能を持つことが当たり前になる</li>
+<li>Railsはわりといまだに一体型
 
 <ul>
 <li>まあ悪いことばっかりというわけでもないけども</li>
@@ -82,13 +94,13 @@
 </section>
 <section>
 
-<h1>ORMの進化 - 3</h1>
+<h2>ORMの進化 - 3</h2>
 
 <p>純粋なアドオン時代</p>
 
 <ul>
 <li>WAFのインストールにくっついて入ってくるけど、実はインストールオプションで変えられたりとか</li>
-<li>sqlalchemyとか</li>
+<li>SQLAlchemyとか</li>
 <li>WAF / ORM / migration / template engineとバラせて組み合わせられると、関心の対象を小さくできる
 
 <ul>
@@ -114,19 +126,19 @@
 </thead>
 <tbody>
 <tr>
-<td>cakephp2</td>
+<td>CakePHP2</td>
 <td>超一体型</td>
 </tr>
 <tr>
-<td>rails</td>
+<td>Rails</td>
 <td>超一体型</td>
 </tr>
 <tr>
-<td>django</td>
+<td>Django</td>
 <td>超一体型</td>
 </tr>
 <tr>
-<td>sqlalchemy</td>
+<td>SQLAlchemy</td>
 <td>純粋アドオン</td>
 </tr>
 <tr>
@@ -269,13 +281,8 @@
 </section>
 <section>
 
-<h1>休憩 <img class="emoji" alt=":sleepy:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f62a.png">
-</h1>
-
-</section>
-<section>
-
-<h1>ディスカッションタイム</h1>
+<h2>ではここで最初のディスカッションタイム <img class="emoji" alt=":raising_hand:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f64b.png">
+</h2>
 
 <p>ORMのいいところ・ダメなところってなんだろう？</p>
 
@@ -289,7 +296,7 @@
 </section>
 <section>
 
-<h1>ではわたくしの意見を <img class="emoji" alt=":bow:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f647.png">
+<h1>ではわたくしの意見 <img class="emoji" alt=":bow:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f647.png">
 </h1>
 
 </section>
@@ -419,6 +426,13 @@ end
 </section>
 <section>
 
+<h2>fat controller問題</h2>
+
+<p>ORMの条件式の構築もビジネスロジックもなんでもかんでもControllerに書いちゃう、という問題</p>
+
+</section>
+<section>
+
 <h2>実際にRailsのコントローラーを定義してみよう</h2>
 
 <p>Modelおさらい</p>
@@ -450,20 +464,13 @@ end
 </section>
 <section>
 
-<h1>すっきり <img class="emoji" alt=":smile:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f604.png">
+<h1>とってもslim <img class="emoji" alt=":smile:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f604.png">
 </h1>
 
 </section>
 <section>
 
-<h1>fat controller問題</h1>
-
-<p>ORMの条件式の構築もビジネスロジックもなんでもかんでもControllerに書いちゃう、という問題</p>
-
-</section>
-<section>
-
-<h1>ディスカッションタイム</h1>
+<h2>ディスカッションタイム</h2>
 
 <ul>
 <li>おれたちのシステムはfat controller問題を抱えているのか？</li>
@@ -565,7 +572,12 @@ end
 
 <h2>他にも色々</h2>
 
-<p>念のためもう一度</p>
+<p>Railsはエコシステム全体にFatなんたら問題と戦うための手段が用意されている <img class="emoji" alt=":tada:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f389.png"></p>
+
+</section>
+<section>
+
+<h2>念のためもう一度</h2>
 
 <p>筆者はRails信者というわけではありません <img class="emoji" alt=":innocent:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f607.png"></p>
 
@@ -577,7 +589,7 @@ end
 </section>
 <section>
 
-<h1>N+1問題って？</h1>
+<h2>N+1問題って？</h2>
 
 <blockquote>
 <p>SQLクエリが 「データ量N + 1回 」走ってしまい、取得するデータが多くなるにつれて（Nの回数が増えるにつれて）パフォーマンスを低下させてしまう問題</p>
@@ -643,6 +655,7 @@ rails console &gt; profiles = users.map { |user| user.profile }
 <li>Association定義しておいたリレーション先が一括で取得される方式</li>
 <li>なので、N+1は発生しないが余計なデータを常に取得することを気にする必要がある</li>
 <li>ActiveRecordと発想が逆</li>
+<li>(templateのescapeといい、一般的なWAFと逆なところちょいちょいあるなー <img class="emoji" alt=":sweat_smile:" src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f605.png"> )</li>
 </ul>
 
 </section>
@@ -660,7 +673,7 @@ rails console &gt; profiles = users.map { |user| user.profile }
 </section>
 <section>
 
-<h1>Migration</h1>
+<h2>Migration</h2>
 
 <ul>
 <li>スキーマの変更を管理する仕組み</li>
@@ -684,7 +697,7 @@ rails console &gt; profiles = users.map { |user| user.profile }
 </section>
 <section>
 
-<h1>色々なMigrationツール</h1>
+<h2>色々なMigrationツール</h2>
 
 <ul>
 <li>一体型のWAFにはだいたい付いてる
@@ -711,7 +724,7 @@ rails console &gt; profiles = users.map { |user| user.profile }
 </section>
 <section>
 
-<h1>まとめ</h1>
+<h2>まとめ</h2>
 
 <ul>
 <li>
